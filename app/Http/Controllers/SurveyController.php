@@ -62,46 +62,52 @@ class SurveyController extends Controller
             'question' => $questions[$step],
             'step' => $step,
             'prevAnswer' => $prevAnswer,
+            'questions' => $questions
         ]);
     }
 
     public function storeAnswer(Request $request)
     {
-        $request->validate([
-            'step' => 'required|integer',
-            'jawaban' => 'required',
-        ]);
+        try {
+            $request->validate([
+                'step' => 'required|integer',
+                'jawaban' => 'required',
+            ]);
 
-        $step = $request->input('step');
-        $action = $request->input('action'); // next, back, submit
-        $survey = Survey::where('session_id', session()->getId())->first();
-        
-        if (!$survey) {
-            return redirect()->route('survey.thankyou');
+            $step = $request->input('step');
+            $action = $request->input('action'); // next, back, submit
+            $survey = Survey::where('session_id', session()->getId())->first();
+
+            if (!$survey) {
+                throw new \Exception('Silakan isi data diri terlebih dahulu.');
+            }
+
+            // Simpan jawaban ke tabel SurveyAnswer
+            SurveyAnswer::updateOrCreate(
+                [
+                    'survey_id' => $survey->id,
+                    'question_number' => $step,
+                ],
+                [
+                    'answer' => $request->input('jawaban'),
+                ]
+            );
+
+            // Navigasi ke step berikutnya atau sebelumnya
+            if ($action === 'back') {
+                $nextStep = $step - 1;
+            } else {
+                $nextStep = $step + 1;
+            }
+
+            if ($action === 'submit') {
+                return redirect()->route('survey.thankyou');
+            }
+
+            return redirect()->route('survey.question', ['step' => $nextStep]);
+        } catch (\Exception $e) {
+            // Redirect ke halaman surveywelcome dengan pesan error
+            return redirect()->route('survey.welcome')->with('error', $e->getMessage());
         }
-
-        // Simpan jawaban ke tabel SurveyAnswer
-        SurveyAnswer::updateOrCreate(
-            [
-                'survey_id' => $survey->id,
-                'question_number' => $step
-            ],
-            [
-                'answer' => $request->input('jawaban')
-            ]
-        );
-
-        // Navigasi ke step berikutnya atau sebelumnya
-        if ($action === 'back') {
-            $nextStep = $step - 1;
-        } else {
-            $nextStep = $step + 1;
-        }
-
-        if ($action === 'submit') {
-            return redirect()->route('survey.thankyou');
-        }
-
-        return redirect()->route('survey.question', ['step' => $nextStep]);
     }
 }

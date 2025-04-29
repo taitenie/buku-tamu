@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Survey;
 use Illuminate\Http\Request;
 
 class SurveyWelcomeController extends Controller
@@ -15,19 +16,30 @@ class SurveyWelcomeController extends Controller
     // Menangani form submit dari welcome
     public function start(Request $request)
     {
-        // Validasi input
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'umur' => 'required|integer|min:1|max:120',
-            'no_hp' => 'required|string|max:20',
-            'jenis_kelamin' => 'required|in:L,P',
-        ]);
+        try {
+            // Validasi input
+            $validated = $request->validate([
+                'nama' => 'required|string|max:255',
+                'umur' => 'required|integer|min:1|max:120',
+                'no_hp' => 'required|string|max:20',
+                'jenis_kelamin' => 'required|in:L,P',
+            ]);
 
-        // Simpan data ke session untuk sementara
-        session(['visitor' => $validated]);
+            // Simpan data ke tabel surveys
+            Survey::create([
+                'session_id' => session()->getId(),
+                'nama' => $validated['nama'],
+                'umur' => $validated['umur'],
+                'no_hp' => $validated['no_hp'],
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+            ]);
 
-        // Redirect ke halaman survey
-        return redirect()->route('survey.question');
+            // Redirect ke halaman pertanyaan pertama
+            return redirect()->route('survey.question', ['step' => 1]);
+        } catch (\Exception $e) {
+            // Redirect ke halaman surveywelcome dengan pesan error
+            return redirect()->route('survey.welcome')->with('error', $e->getMessage());
+        }
     }
 
     // Menampilkan halaman survey form

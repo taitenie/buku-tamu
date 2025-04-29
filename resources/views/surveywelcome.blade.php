@@ -332,6 +332,12 @@
                 Mohon untuk mengisi dengan sebenar-benarnya.</p>
         </div>
 
+        @if (session('error'))
+        <div style="color: red; font-weight: bold; margin-bottom: 20px;">
+            {{ session('error') }}
+        </div>
+        @endif
+
         <!-- Form Kanan -->
         <div class="form-container">
             <form class="visitor-form" method="POST" action="{{ route('survey.start') }}">
@@ -350,8 +356,8 @@
                         </select>
                     </div>
                 </div>
-                
-                <button type="submit" class="submit-btn-inline">Lanjut</button>                
+
+                <button type="submit" class="submit-btn-inline">Lanjut</button>
             </form>
         </div>
     </div>

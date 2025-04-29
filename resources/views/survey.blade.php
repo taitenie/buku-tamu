@@ -223,35 +223,42 @@
             @csrf
             <input type="hidden" name="step" value="{{ $step }}">
 
-            <!-- Pilihan Jawaban -->
-            <label class="option">
-                <input type="radio" name="jawaban" value="1" required {{ (isset($selected) && $selected == 1) ? 'checked' : '' }}>
-                <span>Tidak Sesuai</span>
-            </label>
-            <label class="option">
-                <input type="radio" name="jawaban" value="2" {{ (isset($selected) && $selected == 2) ? 'checked' : '' }}>
-                <span>Kurang Sesuai</span>
-            </label>
-            <label class="option">
-                <input type="radio" name="jawaban" value="3" {{ (isset($selected) && $selected == 3) ? 'checked' : '' }}>
-                <span>Sesuai</span>
-            </label>
-            <label class="option">
-                <input type="radio" name="jawaban" value="4" {{ (isset($selected) && $selected == 4) ? 'checked' : '' }}>
-                <span>Sangat Sesuai</span>
-            </label>
+            <div class="option">
+                <label>
+                    <input type="radio" name="jawaban" value="1" required> Sangat Tidak Setuju
+                </label>
+            </div>
+            <div class="option">
+                <label>
+                    <input type="radio" name="jawaban" value="2"> Tidak Setuju
+                </label>
+            </div>
+            <div class="option">
+                <label>
+                    <input type="radio" name="jawaban" value="3"> Netral
+                </label>
+            </div>
+            <div class="option">
+                <label>
+                    <input type="radio" name="jawaban" value="4"> Setuju
+                </label>
+            </div>
+            <div class="option">
+                <label>
+                    <input type="radio" name="jawaban" value="5"> Sangat Setuju
+                </label>
+            </div>
 
-            <!-- Tombol Navigasi -->
-            <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <div class="">
                 @if ($step > 1)
-                    <button type="submit" name="action" value="back" class="next-btn" style="background-color: #ccc; color: #00218D;">Kembali</button>
+                <button type="submit" name="action" value="back" class="next-btn">Back</button>
                 @endif
 
-                @if ($step < 11)
+                @if ($step < count($questions))
                     <button type="submit" name="action" value="next" class="next-btn">Next</button>
-                @else
-                    <button type="submit" name="action" value="submit" class="next-btn">Kirim</button>
-                @endif
+                    @elseif ($step == count($questions))
+                    <button type="submit" name="action" value="submit" class="next-btn">Submit</button>
+                    @endif
             </div>
         </form>
     </div>
@@ -294,4 +301,5 @@
         <p class="footer-bottom">© 2025 Dinas Pendidikan Provinsi Jawa Timur</p>
     </footer>
 </body>
+
 </html>
