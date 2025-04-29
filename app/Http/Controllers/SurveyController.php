@@ -19,12 +19,14 @@ class SurveyController extends Controller
 
         // Simpan data pengunjung di tabel Survey
         $survey = Survey::create([
-            'session_id' => session()->getId(),
             'nama' => $request->input('nama'),
             'umur' => $request->input('umur'),
             'no_hp' => $request->input('no_hp'),
             'jenis_kelamin' => $request->input('jenis_kelamin'),
         ]);
+
+        // Simpan ID survei ke session untuk melacak survei saat ini
+        session(['survey_id' => $survey->id]);
 
         return redirect()->route('survey.question', ['step' => 1]);
     }
@@ -50,19 +52,22 @@ class SurveyController extends Controller
             return redirect()->route('survey.thankyou');
         }
 
-        // Ambil jawaban sebelumnya dari SurveyAnswer berdasarkan session_id
-        $survey = Survey::where('session_id', session()->getId())->first();
-        $prevAnswer = null;
-        if ($survey) {
-            $answer = SurveyAnswer::where('survey_id', $survey->id)->where('question_number', $step)->first();
-            $prevAnswer = $answer ? $answer->answer : null;
+        // Ambil ID survei dari session
+        $surveyId = session('survey_id');
+        if (!$surveyId) {
+            return redirect()->route('survey.welcome')->with('error', 'Silakan mulai survei terlebih dahulu.');
         }
+
+        // Ambil jawaban sebelumnya dari SurveyAnswer berdasarkan survey_id
+        $prevAnswer = SurveyAnswer::where('survey_id', $surveyId)
+            ->where('question_number', $step)
+            ->value('answer');
 
         return view('survey', [
             'question' => $questions[$step],
             'step' => $step,
             'prevAnswer' => $prevAnswer,
-            'questions' => $questions
+            'questions' => $questions,
         ]);
     }
 
@@ -79,17 +84,17 @@ class SurveyController extends Controller
                 ]);
             }
 
-            $survey = Survey::where('session_id', session()->getId())->first();
-
-            if (!$survey) {
-                throw new \Exception('Silakan isi data diri terlebih dahulu.');
+            // Ambil ID survei dari session
+            $surveyId = session('survey_id');
+            if (!$surveyId) {
+                throw new \Exception('Silakan mulai survei terlebih dahulu.');
             }
 
             // Simpan jawaban ke tabel SurveyAnswer jika action bukan "back"
             if ($action !== 'back') {
                 SurveyAnswer::updateOrCreate(
                     [
-                        'survey_id' => $survey->id,
+                        'survey_id' => $surveyId,
                         'question_number' => $step,
                     ],
                     [
@@ -111,7 +116,6 @@ class SurveyController extends Controller
 
             return redirect()->route('survey.question', ['step' => $nextStep]);
         } catch (\Exception $e) {
-            // Redirect ke halaman surveywelcome dengan pesan error
             return redirect()->route('survey.welcome')->with('error', $e->getMessage());
         }
     }

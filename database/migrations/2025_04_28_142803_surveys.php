@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('surveys', function (Blueprint $table) {
             $table->id();
-            $table->string('session_id')->unique();
             $table->string('nama')->nullable();
             $table->integer('umur')->nullable();
             $table->string('no_hp')->nullable();
