@@ -69,33 +69,38 @@ class SurveyController extends Controller
     public function storeAnswer(Request $request)
     {
         try {
-            $request->validate([
-                'step' => 'required|integer',
-                'jawaban' => 'required',
-            ]);
-
             $step = $request->input('step');
             $action = $request->input('action'); // next, back, submit
+
+            // Validasi hanya jika action adalah "next" atau "submit"
+            if ($action !== 'back') {
+                $request->validate([
+                    'jawaban' => 'required',
+                ]);
+            }
+
             $survey = Survey::where('session_id', session()->getId())->first();
 
             if (!$survey) {
                 throw new \Exception('Silakan isi data diri terlebih dahulu.');
             }
 
-            // Simpan jawaban ke tabel SurveyAnswer
-            SurveyAnswer::updateOrCreate(
-                [
-                    'survey_id' => $survey->id,
-                    'question_number' => $step,
-                ],
-                [
-                    'answer' => $request->input('jawaban'),
-                ]
-            );
+            // Simpan jawaban ke tabel SurveyAnswer jika action bukan "back"
+            if ($action !== 'back') {
+                SurveyAnswer::updateOrCreate(
+                    [
+                        'survey_id' => $survey->id,
+                        'question_number' => $step,
+                    ],
+                    [
+                        'answer' => $request->input('jawaban'),
+                    ]
+                );
+            }
 
             // Navigasi ke step berikutnya atau sebelumnya
             if ($action === 'back') {
-                $nextStep = $step - 1;
+                $nextStep = max(1, $step - 1); // Pastikan tidak kurang dari 1
             } else {
                 $nextStep = $step + 1;
             }

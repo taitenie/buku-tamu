@@ -557,7 +557,7 @@
                 <select id="bidang" name="bidang" required>
                     <option value="" disabled selected style="color: gray;">Bidang yang Dituju</option>
                     @foreach ($bidang as $data)
-                        <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                    <option value="{{ $data->id }}">{{ $data->nama }}</option>
                     @endforeach
                 </select>
 
@@ -565,7 +565,7 @@
                 <select id="rekomendasi" name="rekomendasi">
                     <option value="" disabled selected style="color: gray;">Rekomendasi Cabdin</option>
                     @foreach ($rekomendasi as $data)
-                        <option value="{{ $data->id }}">{{ $data->nama }}</option>
+                    <option value="{{ $data->id }}">{{ $data->nama }}</option>
                     @endforeach
                 </select>
 
@@ -587,15 +587,17 @@
                     const canvas = document.getElementById('canvas');
                     const cameraIcon = document.getElementById('camera-icon');
                     let isCameraActive = false;
-                
-                    captureButton.addEventListener('click', async function (event) {
+
+                    captureButton.addEventListener('click', async function(event) {
                         event.preventDefault();
-                
+
                         if (!isCameraActive) {
                             // Aktifkan kamera
                             try {
                                 const stream = await navigator.mediaDevices.getUserMedia({
-                                    video: { facingMode: 'environment' }
+                                    video: {
+                                        facingMode: 'environment'
+                                    }
                                 });
                                 video.srcObject = stream;
                                 video.style.display = 'block';
@@ -610,28 +612,28 @@
                             const context = canvas.getContext('2d');
                             const width = video.videoWidth;
                             const height = video.videoHeight;
-                
+
                             canvas.width = width;
                             canvas.height = height;
                             context.drawImage(video, 0, 0, width, height);
-                
+
                             const imageDataURL = canvas.toDataURL('image/png');
                             document.getElementById('foto').value = imageDataURL;
-                
+
                             const imgElement = document.createElement('img');
                             imgElement.src = imageDataURL;
                             imgElement.style.width = '100%';
                             imgElement.style.height = 'auto';
                             imgElement.style.borderRadius = '5px';
-                
+
                             // Stop kamera
                             let tracks = video.srcObject.getTracks();
                             tracks.forEach(track => track.stop());
-                
+
                             // Ganti konten
                             document.querySelector('.foto-container').innerHTML = '';
                             document.querySelector('.foto-container').appendChild(imgElement);
-                
+
                             isCameraActive = false;
                         }
                     });
@@ -652,7 +654,7 @@
                     <li><a href="#form-section" style="color: #00218D">Form</a>
                     <li><a href="#" style="color: #00218D">Layanan</a>
                     <li><a href="{{ route('contact') }}" style="color: #00218D">Kontak</a>
-                    <li><a href="{{ route('survey.welcome') }}"style="color: #00218D">Survey</a>
+                    <li><a href="{{ route('survey.welcome') }}" style="color: #00218D">Survey</a>
                 </ul>
             </div>
 

@@ -225,27 +225,27 @@
 
             <div class="option">
                 <label>
-                    <input type="radio" name="jawaban" value="1" required> Sangat Tidak Setuju
+                    <input type="radio" name="jawaban" value="1" {{ $prevAnswer == 1 ? 'checked' : '' }}> Sangat Tidak Setuju
                 </label>
             </div>
             <div class="option">
                 <label>
-                    <input type="radio" name="jawaban" value="2"> Tidak Setuju
+                    <input type="radio" name="jawaban" value="2" {{ $prevAnswer == 2 ? 'checked' : '' }}> Tidak Setuju
                 </label>
             </div>
             <div class="option">
                 <label>
-                    <input type="radio" name="jawaban" value="3"> Netral
+                    <input type="radio" name="jawaban" value="3" {{ $prevAnswer == 3 ? 'checked' : '' }}> Netral
                 </label>
             </div>
             <div class="option">
                 <label>
-                    <input type="radio" name="jawaban" value="4"> Setuju
+                    <input type="radio" name="jawaban" value="4" {{ $prevAnswer == 4 ? 'checked' : '' }}> Setuju
                 </label>
             </div>
             <div class="option">
                 <label>
-                    <input type="radio" name="jawaban" value="5"> Sangat Setuju
+                    <input type="radio" name="jawaban" value="5" {{ $prevAnswer == 5 ? 'checked' : '' }}> Sangat Setuju
                 </label>
             </div>
 
