@@ -26,13 +26,14 @@ class SurveyWelcomeController extends Controller
             ]);
 
             // Simpan data ke tabel surveys
-            Survey::create([
-                'session_id' => session()->getId(),
+            $survey = Survey::create([
                 'nama' => $validated['nama'],
                 'umur' => $validated['umur'],
                 'no_hp' => $validated['no_hp'],
                 'jenis_kelamin' => $validated['jenis_kelamin'],
             ]);
+
+            session(['survey_id' => $survey->id]);
 
             // Redirect ke halaman pertanyaan pertama
             return redirect()->route('survey.question', ['step' => 1]);
