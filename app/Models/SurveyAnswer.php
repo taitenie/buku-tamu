@@ -2,26 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class SurveyAnswer extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'session_id',
-        'nama',
-        'umur',
-        'no_hp',
-        'jenis_kelamin',
-        'jawaban_1',
-        'jawaban_2',
-        'jawaban_3',
-        'jawaban_4',
-        'jawaban_5',
-        'jawaban_6',
-        'jawaban_7',
-        'jawaban_8',
-        'jawaban_9',
-        'jawaban_10',
-        'jawaban_11',
+        'survey_id',
+        'question_number',
+        'answer',
     ];
+
+    // Relasi SurveyAnswer belongs to Survey
+    public function survey()
+    {
+        return $this->belongsTo(Survey::class);
+    }
 }

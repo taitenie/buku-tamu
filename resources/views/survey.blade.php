@@ -30,15 +30,12 @@
             color: #00218D;
             text-align: center;
             margin: 0;
-            padding: 10;
         }
 
         .navbar {
             background-color: #00218D;
             border-bottom-left-radius: 10px;
-            /* Sudut kiri bawah */
             border-bottom-right-radius: 10px;
-            /* Sudut kanan bawah */
             color: white;
             padding: 10px 20px;
             display: flex;
@@ -47,13 +44,7 @@
             position: fixed;
             width: 100%;
             top: 0;
-            left: 0;
             z-index: 1000;
-            font-weight: bold;
-        }
-
-        .navbar .logo {
-            font-size: 20px;
             font-weight: bold;
         }
 
@@ -76,21 +67,13 @@
             border-radius: 20px;
         }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-        }
-
         .logo-container img {
             height: 50px;
-            /* Sesuaikan ukuran logo */
             margin-right: 10px;
-            /* Beri jarak antara logo dan teks */
         }
 
         .survey-container {
-            padding: 40px 20px;
-            margin-top: 50px;
+            padding: 80px 20px 40px;
         }
 
         .survey-question {
@@ -114,7 +97,6 @@
             padding: 12px 30px;
             width: 300px;
             text-align: left;
-            cursor: pointer;
             background-color: white;
             font-size: 16px;
             transition: 0.3s;
@@ -124,9 +106,8 @@
             margin-right: 10px;
         }
 
-        .option:hover,
-        .option input[type="radio"]:checked+label {
-            background-color: #cfd9ff;
+        .option input[type="radio"]:checked {
+            accent-color: #00218D;
         }
 
         .next-btn {
@@ -144,44 +125,29 @@
         footer {
             background: white;
             padding: 20px;
-            font-family: Arial, sans-serif;
-            text-align: left;
         }
 
-        /* Container Utama Footer */
         .footer-container {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             flex-wrap: wrap;
-            /* Biar responsif di layar kecil */
             gap: 20px;
-        }
-
-        /* Logo di Footer */
-        .footer-logo {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
         }
 
         .footer-logo img {
             width: 300px;
-            /* Ukuran logo lebih proporsional */
             margin-bottom: 10px;
             padding-top: 35px;
         }
 
-        /* Style untuk Menu, Kontak, dan Sosial Media */
         .footer-menu,
         .footer-contact,
         .footer-social {
             flex: 1;
             max-width: 250px;
-            /* Biar tidak melebar */
         }
 
-        /* Judul di Menu dan Kontak */
         .footer-menu h4,
         .footer-contact h4,
         .footer-social h4 {
@@ -191,7 +157,6 @@
             margin-bottom: 10px;
         }
 
-        /* List Menu */
         .footer-menu ul {
             list-style: none;
             padding: 0;
@@ -206,7 +171,6 @@
             color: black;
         }
 
-        /* Style untuk Kontak & Sosial Media */
         .footer-contact p,
         .footer-social p {
             margin: 8px 0;
@@ -216,22 +180,18 @@
             gap: 8px;
         }
 
-        /* Style untuk Ikon */
         .footer-contact p img,
         .footer-social p img {
             width: 20px;
-            /* Ukuran ikon */
             height: 20px;
         }
 
-        /* Garis Pembatas */
         .footer-line {
             border: none;
             border-top: 2px solid orange;
             margin: 10px 0;
         }
 
-        /* Bagian Bawah Footer */
         .footer-bottom {
             text-align: center;
             font-size: 14px;
@@ -263,33 +223,41 @@
             @csrf
             <input type="hidden" name="step" value="{{ $step }}">
 
+            <!-- Pilihan Jawaban -->
             <label class="option">
-                <input type="radio" name="jawaban" value="1" required>
-                Tidak Sesuai
+                <input type="radio" name="jawaban" value="1" required {{ (isset($selected) && $selected == 1) ? 'checked' : '' }}>
+                <span>Tidak Sesuai</span>
             </label>
             <label class="option">
-                <input type="radio" name="jawaban" value="2">
-                Kurang Sesuai
+                <input type="radio" name="jawaban" value="2" {{ (isset($selected) && $selected == 2) ? 'checked' : '' }}>
+                <span>Kurang Sesuai</span>
             </label>
             <label class="option">
-                <input type="radio" name="jawaban" value="3">
-                Sesuai
+                <input type="radio" name="jawaban" value="3" {{ (isset($selected) && $selected == 3) ? 'checked' : '' }}>
+                <span>Sesuai</span>
             </label>
             <label class="option">
-                <input type="radio" name="jawaban" value="4">
-                Sangat Sesuai
+                <input type="radio" name="jawaban" value="4" {{ (isset($selected) && $selected == 4) ? 'checked' : '' }}>
+                <span>Sangat Sesuai</span>
             </label>
 
-            @if ($step < 11)
-                <button type="submit" class="next-btn">Next</button>
-            @else
-                <button type="submit" class="next-btn">Kirim</button>
-            @endif
+            <!-- Tombol Navigasi -->
+            <div style="display: flex; gap: 10px; margin-top: 30px;">
+                @if ($step > 1)
+                    <button type="submit" name="action" value="back" class="next-btn" style="background-color: #ccc; color: #00218D;">Kembali</button>
+                @endif
+
+                @if ($step < 11)
+                    <button type="submit" name="action" value="next" class="next-btn">Next</button>
+                @else
+                    <button type="submit" name="action" value="submit" class="next-btn">Kirim</button>
+                @endif
+            </div>
         </form>
     </div>
 
     <footer>
-        <div id="footer" class="footer-container">
+        <div class="footer-container">
             <div class="footer-logo">
                 <img src="/images/logo footer.png" alt="Logo Dinas Pendidikan Jawa Timur">
             </div>
@@ -297,55 +265,33 @@
             <div class="footer-menu">
                 <h4>Our Menu</h4>
                 <ul>
-                    <li><a href="{{ route('home') }}" style="color: #00218D">Home</a>
-                    <li><a href="{{ route('home') }}" style="color: #00218D">Form</a>
-                    <li><a href="#" style="color: #00218D">Layanan</a>
-                    <li><a href="{{ route('contact') }}" style="color: #00218D">Kontak</a>
-                    <li><a href="{{ route('survey.question') }}" style="color: #00218D">Survey</a>
+                    <li><a href="{{ route('home') }}" style="color: #00218D">Home</a></li>
+                    <li><a href="{{ route('home') }}" style="color: #00218D">Form</a></li>
+                    <li><a href="#" style="color: #00218D">Layanan</a></li>
+                    <li><a href="{{ route('contact') }}" style="color: #00218D">Kontak</a></li>
+                    <li><a href="{{ route('survey.question') }}" style="color: #00218D">Survey</a></li>
                 </ul>
             </div>
 
             <div class="footer-contact">
                 <h4>Contact Us</h4>
-                <p>
-                    <img src="/images/icon-lokasi.png" alt="Icon Lokasi" width="20"> Jl. Genteng Kali No.33,
-                    Surabaya, Jawa
-                    Timur 60275
-                </p>
-                <p>
-                    <img src="/images/icon-email.png" alt="Icon Email" width="20"> <a
-                        href="mailto:dindik@jatimprov.go.id">dindik@jatimprov.go.id</a> //
-                </p>
+                <p><img src="/images/icon-lokasi.png" alt="Icon Lokasi"> Jl. Genteng Kali No.33, Surabaya</p>
+                <p><img src="/images/icon-email.png" alt="Icon Email"> <a href="mailto:dindik@jatimprov.go.id">dindik@jatimprov.go.id</a></p>
                 <p><a href="mailto:ppidhumas.dindikjatim@gmail.com">ppidhumas.dindikjatim@gmail.com</a></p>
-                <p>
-                    <img src="/images/icon-wa.png" alt="Icon Telepon" width="20"> 0811-3110-8881
-                </p>
-                <p>
-                    <img src="/images/icon-lapor.png" alt="Icon Lapor" width="20"> <a
-                        href="https://www.lapor.go.id">Lapor.go.id</a>
-                </p>
+                <p><img src="/images/icon-wa.png" alt="Icon Telepon"> 0811-3110-8881</p>
+                <p><img src="/images/icon-lapor.png" alt="Icon Lapor"> <a href="https://www.lapor.go.id">Lapor.go.id</a></p>
             </div>
 
             <div class="footer-social">
                 <h4>Social Media</h4>
-                <p>
-                    <img src="/images/icon-ig.png" alt="Icon Lokasi" width="20"> @dindik_jatim
-                </p>
-                <p>
-                    <img src="/images/icon-fb.png" alt="Icon Lokasi" width="20"> Dindik.Jatim
-                </p>
-                <p>
-                    <img src="/images/icon-x.png" alt="Icon Lokasi" width="20"> @Dindik_Jatim
-                </p>
-                <p>
-                    <img src="/images/icon-yt.png" alt="Icon Lokasi" width="20"> Dinas Pendidikan Provinsi Jawa
-                    Timur
-                </p>
+                <p><img src="/images/icon-ig.png" alt="IG"> @dindik_jatim</p>
+                <p><img src="/images/icon-fb.png" alt="FB"> Dindik.Jatim</p>
+                <p><img src="/images/icon-x.png" alt="X"> @Dindik_Jatim</p>
+                <p><img src="/images/icon-yt.png" alt="YT"> Dinas Pendidikan Provinsi Jawa Timur</p>
             </div>
         </div>
-
         <hr class="footer-line">
-
         <p class="footer-bottom">© 2025 Dinas Pendidikan Provinsi Jawa Timur</p>
     </footer>
 </body>
+</html>

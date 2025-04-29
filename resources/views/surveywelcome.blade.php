@@ -179,7 +179,7 @@
         }
 
         .submit-btn-inline {
-            background-color: #00218D
+            background-color: #00218D;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -337,8 +337,8 @@
             <form class="visitor-form" method="POST" action="{{ route('survey.start') }}">
                 @csrf
                 <input type="text" name="nama" placeholder="Nama Pengunjung" required>
-                <input type="number" name="umur" placeholder="Umur Pengunjung" required>
-                <input type="tel" name="no_hp" placeholder="Nomor Handphone" required>
+                <input type="number" name="umur" placeholder="Umur Pengunjung" min="10" max="100" required>
+                <input type="tel" name="no_hp" pattern="[0-9]{10,15}" placeholder="Nomor Handphone" required>
 
                 <!-- Baris Jenis Kelamin + Submit -->
                 <div class="form-row">

@@ -6,26 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up()
+    public function up(): void
     {
-        Schema::table('survey_answers', function (Blueprint $table) {
+        Schema::create('surveys', function (Blueprint $table) {
+            $table->id();
+            $table->string('session_id')->unique();
             $table->string('nama')->nullable();
             $table->integer('umur')->nullable();
             $table->string('no_hp')->nullable();
-            $table->string('jenis_kelamin', 1)->nullable();
+            $table->string('jenis_kelamin')->nullable();
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('survey_answers', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('surveys');
     }
 };

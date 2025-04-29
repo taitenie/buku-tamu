@@ -27,7 +27,7 @@ class SurveyWelcomeController extends Controller
         session(['visitor' => $validated]);
 
         // Redirect ke halaman survey
-        return redirect()->route('survey.form');
+        return redirect()->route('survey.question');
     }
 
     // Menampilkan halaman survey form

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Survey;
 use App\Models\SurveyAnswer;
 
 class SurveyController extends Controller
 {
-
     public function startSurvey(Request $request)
     {
         $request->validate([
@@ -17,11 +17,13 @@ class SurveyController extends Controller
             'jenis_kelamin' => 'required|in:L,P',
         ]);
 
-        session([
-            'pengunjung_nama' => $request->input('nama'),
-            'pengunjung_umur' => $request->input('umur'),
-            'pengunjung_no_hp' => $request->input('no_hp'),
-            'pengunjung_jenis_kelamin' => $request->input('jenis_kelamin'),
+        // Simpan data pengunjung di tabel Survey
+        $survey = Survey::create([
+            'session_id' => session()->getId(),
+            'nama' => $request->input('nama'),
+            'umur' => $request->input('umur'),
+            'no_hp' => $request->input('no_hp'),
+            'jenis_kelamin' => $request->input('jenis_kelamin'),
         ]);
 
         return redirect()->route('survey.question', ['step' => 1]);
@@ -44,48 +46,59 @@ class SurveyController extends Controller
         ];
 
         $step = $request->get('step', 1);
-
         if (!array_key_exists($step, $questions)) {
             return redirect()->route('survey.thankyou');
         }
 
+        // Ambil jawaban sebelumnya dari SurveyAnswer berdasarkan session_id
+        $survey = Survey::where('session_id', session()->getId())->first();
+        $prevAnswer = null;
+        if ($survey) {
+            $answer = SurveyAnswer::where('survey_id', $survey->id)->where('question_number', $step)->first();
+            $prevAnswer = $answer ? $answer->answer : null;
+        }
+
         return view('survey', [
             'question' => $questions[$step],
-            'step' => $step
+            'step' => $step,
+            'prevAnswer' => $prevAnswer,
         ]);
     }
 
     public function storeAnswer(Request $request)
     {
         $request->validate([
+            'step' => 'required|integer',
             'jawaban' => 'required',
-            'step' => 'required|integer'
         ]);
 
         $step = $request->input('step');
-        $jawaban = $request->input('jawaban');
-        $sessionId = session()->getId(); // user ID unik (tanpa login)
-
-        // Nama kolom yang akan diisi
-        $columnName = 'jawaban_' . $step;
-
-        if ($step == 1) {
-            $dataToUpdate['nama'] = session('pengunjung_nama');
-            $dataToUpdate['umur'] = session('pengunjung_umur');
-            $dataToUpdate['no_hp'] = session('pengunjung_no_hp');
-            $dataToUpdate['jenis_kelamin'] = session('pengunjung_jenis_kelamin');
+        $action = $request->input('action'); // next, back, submit
+        $survey = Survey::where('session_id', session()->getId())->first();
+        
+        if (!$survey) {
+            return redirect()->route('survey.thankyou');
         }
 
-        // Update atau insert data berdasarkan session_id
-        \App\Models\SurveyAnswer::updateOrCreate(
-            ['session_id' => $sessionId],
-            [$columnName => $jawaban]
+        // Simpan jawaban ke tabel SurveyAnswer
+        SurveyAnswer::updateOrCreate(
+            [
+                'survey_id' => $survey->id,
+                'question_number' => $step
+            ],
+            [
+                'answer' => $request->input('jawaban')
+            ]
         );
 
-        $nextStep = $step + 1;
+        // Navigasi ke step berikutnya atau sebelumnya
+        if ($action === 'back') {
+            $nextStep = $step - 1;
+        } else {
+            $nextStep = $step + 1;
+        }
 
-        // Asumsikan ada 11 pertanyaan
-        if ($nextStep > 11) {
+        if ($action === 'submit') {
             return redirect()->route('survey.thankyou');
         }
 
